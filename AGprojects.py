@@ -74,31 +74,6 @@ if select_projects == "Investment challenge":
         esg_stock_data = import_data("/Users/AlessioGiust/Documents/Ale/Python - R/Finance PY/Investment challenge/final_esg.xlsx")
         st.write(esg_stock_data)
 
-    #with stock_chart:
-        #st.header("2) Price chart for the selected stock")
-        #ch_box = st.selectbox("Choose the stock you want to chart:", options=esg_stock_data["Ticker"])
-        
-        # plot stock data and MA
-        #stockdata = get_stock(ch_box, "2020-01-01", "2021-03-01")
-        #fig = go.Figure()
-        #fig.add_trace(go.Scatter(x=stockdata.index, y=stockdata["Adj Close"], name="Adjusted Close",line=dict(color='black', width=2)))
-        #fig.add_trace(go.Scatter(x=stockdata.index, y=stockdata["MA5"], name = 'MA-5', line=dict(color='royalblue')))
-        #fig.add_trace(go.Scatter(x=stockdata.index, y=stockdata["MA20"], name = 'MA-20', line=dict(color='blue')))
-        #fig.update_layout(title=f"Adjusted Close, 5 and 20 days Moving Averages for {ch_box}")
-        #st.plotly_chart(fig, use_container_width=True)
-
-        ########## OTHER EXAMPLES ##############
-        # plot a line
-        #fig = px.line(data, x="Date", y="Adj Close", title=f"Adjusted Close, 5 and 20 days Moving Averages for {ch_box}")
-    
-        # plot candlestick
-        #fig = go.Figure(data=[go.Candlestick(x=data.index, open=data["Open"], high=data["High"], low=data["Low"], close=data["Close"], name=ch_box)])
-        #fig.update_layout(height = 600)
-        #st.plotly_chart(fig, use_container_width=True)
-
-        # slider
-        #example_slider = st.slider("Choose days range for stock price", min_value=10, max_value=100, value=50, step=5)
-        
     with indicators_models:
         st.header("II. Technical Indicator inputs and Models deployed")
         # Create 2 columns (then to add things in them use col1. or col2. instead of st.)
@@ -228,7 +203,7 @@ if select_projects == "Thesis report":
 
     with myindexGARCH:
         st.title("Tail Risk protection strategy based on GARCH model")
-        st.markdown("The weights are the same as the modified VEQTOR strategy.")
+        st.markdown("The weights are the same as the modified VEQTOR strategy. The signal is created usign the volatility predictions of a GARCH(1,1) model, with a trigger if the volatility forecast exceed a certain threshold. You can more info regarding the strategy in the Thesis.")
         fig, ax = plt.subplots(figsize=(12, 6))
         ax.plot(veq["Ret_SPXT"].loc[start:end].cumsum(), "black", label="SPXT")
         ax.plot(veq["Ret_INDEX"].loc[start:end].cumsum(), "darkgreen", label="Modified VEQTOR")
