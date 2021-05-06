@@ -32,7 +32,7 @@ if select_projects == "Home":
     st.subheader("Contacts")
     st.markdown("LinkedIn: \n www.linkedin.com/in/alessiogiust67")
     st.markdown("GitHub: \n https://github.com/AleG67")
-    st.markdown("GitHub for Streamlit code: \n https://github.com/AleG67/...")
+    st.markdown("GitHub for Streamlit code: \n https://github.com/AleG67/StreamlitApp_AGprojects")
 @st.cache
 def import_data(filename):
     data = pd.read_excel(filename)
@@ -62,7 +62,7 @@ if select_projects == "Investment challenge":
         st.image("https://i.ytimg.com/vi/7UsyG51Eog8/maxresdefault.jpg")
         #st.title("Reply Sustainable Investment Challenge")     
         st.title("Predict daily stock movements with ML models")
-        st.write("**GitHub repository link:** ")
+        st.write("**GitHub repository link:** https://github.com/AleG67/ReplyInvestmentChallenge")
         st.markdown("In this project I'm predicting stock price movements with four machine learning classification methods. This is a very basic coding exercise to experience the practical aspects and problems of implementing ML techniques on real time data.")
         st.markdown("In the project there are a number of semplifications, such as: \n - Basic machine learning models. \n - Basic data sources and input features. \n - Semplifications in the trading process and no automated trading.")
         st.markdown("This is simply intended to show a basic framework for a quantitative trading strategy, the models are not sophisticated enough to be effective and the strategy management is not realistic.")
@@ -143,7 +143,7 @@ if select_projects == "Thesis report":
 
     with header:
         st.title("Tail Risk Protection strategies")
-        st.write("**GitHub repository link:** ")
+        st.write("**GitHub repository link:** https://github.com/AleG67/ThesisCode")
         st.markdown("In my Master's Thesis I analyzed different strategies to protect portfolios and market index investments against extreme losses. Here you can find a quick summary of the existing strategies I analyzed and the one I created. If interested you can find my Thesis here: .")
         st.markdown("In the text input section below you can choose the start and end date to compare the different strategies over time in different sub-periods. The given inputs are the start and end for the widest time period available to compare all the indexes based on data availability.")
         start = st.text_input("Starting date in format YYYY-MM-DD", "2006-04-28")
@@ -226,7 +226,6 @@ if select_projects == "HRP Portfolio":
 
     with header:
         st.title("Hierarchical Risk Parity portfolio")
-        st.write("**GitHub repository link:** ")
         st.markdown("Hierarchical Risk Parity is a new portfolio optimization technique proposed by Professor Marcos Lopez De Prado in 'Building diversified portfolios that outperform out-of-sample' (2015), where you can find the detailed description of this technique. Here you can find a basic implementation based on the code provided in the paper.")
         st.markdown("HRP is based on 3 steps: \n - Hierarchical Clustering based on a specific distance matrix. \n - Quasi-diagonalization of the covariance matrix, which reorganizes the rows and columns of the matrix, so that the largest values lie along the diagonal. In this way similar investments are placed together, and dissimilar investments are placed far apart. \n - Recursive bisection, used to compute weights based on inverse-variance allocation on subsets of the quasi-diagonalized matrix and then aggregate them together to get the final weights of the portfolio.")
         st.markdown("The idea behind HRP is to cluster together similar assets and avoid the inversion of the covariance matrix that creates great instability in traditional portfolio optimization techniques (see the paper for more details).")
@@ -288,7 +287,6 @@ if select_projects == "Options Valuation":
 
     with header:
         st.title("Valuation of Options with BSM formula and Monte Carlo Simulation")
-        st.write("**GitHub repository link:** ")
     
     with stoch_process:
         st.header("I. Simulate stochastic processes used to model stock price movements")
