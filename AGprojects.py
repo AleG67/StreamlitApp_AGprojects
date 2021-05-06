@@ -19,7 +19,7 @@ import plotly.express as px
 ########### Home and Sidebar ###################################################
 st.sidebar.header("AG Projects")
 st.sidebar.subheader("LinkedIn:")
-st.sidebar.write("www.linkedin.com/in/alessiogiust67")
+st.sidebar.write("https://www.linkedin.com/in/alessiogiust67/")
 st.sidebar.subheader("GitHub:")
 st.sidebar.write("https://github.com/AleG67")
 st.sidebar.subheader("Navigate trough my Projects")
@@ -30,7 +30,7 @@ if select_projects == "Home":
     st.subheader("About me")
     st.markdown("I'm an italian MS student graduating in Finance (Double Degree program between the University of Padova and Zicklin School of Business (CUNY)), holding a Bachelor's Degree in Economics. I'm passionate about Quantitative Finance, Risk management and Asset management. I'm also very interested in coding and Data Science applied to Finance. Here you can find some simple projects that I developed to improve my coding skills (I learned to code on my own so please understand that there might be errors or bad-written code).")
     st.subheader("Contacts")
-    st.markdown("LinkedIn: \n www.linkedin.com/in/alessiogiust67")
+    st.markdown("LinkedIn: \n https://www.linkedin.com/in/alessiogiust67/")
     st.markdown("GitHub: \n https://github.com/AleG67")
     st.markdown("GitHub for Streamlit code: \n https://github.com/AleG67/StreamlitApp_AGprojects")
 @st.cache
