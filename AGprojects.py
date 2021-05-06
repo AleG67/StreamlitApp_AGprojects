@@ -71,7 +71,7 @@ if select_projects == "Investment challenge":
         st.header("I. Tickers used in the models and ESG rating")
         st.markdown("The rule of the challenge was to assign a bonus if you were long on companies with good ESG rating and a penalty otherwise. Hence an idea could be to screen the list of stocks provided in the challenge based on the accuracy scores of each classification method. Then trade based on the predictions and their ESG rating, based on 3 categories: \n  - Good (AAA, AA) \n  - Average (A, BBB, BB, B) \n  - Bad (B, CCC)")
         # import a dataset and show it in the page
-        esg_stock_data = import_data("/Users/AlessioGiust/Documents/Ale/Python - R/Finance PY/Investment challenge/final_esg.xlsx")
+        esg_stock_data = import_data("dataneeded/final_esg.xlsx")
         st.write(esg_stock_data)
 
     with indicators_models:
