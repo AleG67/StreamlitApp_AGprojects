@@ -357,19 +357,19 @@ def model_application_for_web(tick):
     final_output_qda = mod_qda.predict(X_to_predict)
     # Output for the website
     if final_output_rf==1:
-        rf = "Random Forest prediction: The stock price will go UP"
+        rf = "The stock price will go UP"
     else: 
-        rf = "Random Forest prediction: The stock price will go DOWN"
+        rf = "The stock price will go DOWN"
     if final_output_xg==1:
-        xg = "XGBoost prediction: The stock price will go UP"
+        xg = "The stock price will go UP"
     else: 
-        xg = "XGBoost prediction: The stock price will go DOWN"
+        xg = "The stock price will go DOWN"
     if final_output_lda==1:
-        lda = "LDA prediction: The stock price will go UP"
+        lda = "The stock price will go UP"
     else: 
-        lda = "LDA prediction: The stock price will go DOWN"
+        lda = "The stock price will go DOWN"
     if final_output_qda==1:
-        qda = "QDA prediction: The stock price will go UP"
+        qda = "The stock price will go UP"
     else: 
-        qda = "QDA prediction: The stock price will go DOWN"
+        qda = "The stock price will go DOWN"
     return rf, xg, lda, qda
