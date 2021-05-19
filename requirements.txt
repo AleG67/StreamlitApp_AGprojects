@@ -11,3 +11,4 @@ xgboost==1.2.1
 scikit_learn==0.24.2
 xlrd==1.2.0
 statsmodels==0.12.2
+arch==4.19
