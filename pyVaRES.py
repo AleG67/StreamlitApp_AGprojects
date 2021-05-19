@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import arch as ac
 from statsmodels.stats.stattools import durbin_watson
 from scipy.stats import ttest_1samp, jarque_bera
-import mgarch
 
 ##### Further possible additions:                       
 # VaR quantile regression 
