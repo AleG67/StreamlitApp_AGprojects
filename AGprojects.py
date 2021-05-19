@@ -87,7 +87,7 @@ if select_projects == "pyVaRES Library":
             esG99_rol = ES_basic(testret, dist="gaussian", rolling=True, start=60, win=500)
             esT99_rol = ES_basic(testret, dist="tstudent", df=7, rolling=True, start=60, win=500)
             esH99_rol = ES_basic(testret, dist="hist", rolling=True, start=60, win=500)
-            #plot the results
+            # plot the results
         fig, ax = plt.subplots(figsize=(12, 6))
         ax.plot(testret, "grey")
         # Use - to plot as a loss and compare with actual losses
