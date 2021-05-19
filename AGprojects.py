@@ -50,7 +50,7 @@ if select_projects == "pyVaRES Library":
     example5 = st.beta_container()
 
     with header:
-        st.title("Example on how to use the toy-library pyVaRES")
+        st.title("Examples on how to use the toy-library pyVaRES")
         st.write("**GitHub repository link:** https://github.com/AleG67/pyVaRES_toy-library")
         st.markdown("Please take a look at the GitHub repository for a detailed description of each function in the library.")
         # import data to use in the examples and compute returns
