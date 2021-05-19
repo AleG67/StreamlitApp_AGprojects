@@ -61,7 +61,7 @@ if select_projects == "pyVaRES Library":
         st.markdown("In their simplest form, the two functions **VaR_basic** and **ES_basic** can be used to obtain the Value at Risk and the Expected shortfall for the next day or h-days ahead, given a certain significance level alpha, an assumed distribution for the analyzed returns and a position size.")
         with st.echo():
             # import data needed
-            testdata = pd.read_excel("dataneeded/data_VAR.xlsx", index_col="Dates")
+            testdata = pd.read_excel("Dataneeded/data_VAR.xlsx", index_col="Dates")
             testret = testdata["SPY"].pct_change().dropna()
             # Compute VaR and ES for tomorrow
             varG99 = VaR_basic(testret, alpha=0.01, h=1, dist="gaussian", position=1)
