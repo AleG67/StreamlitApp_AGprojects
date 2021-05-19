@@ -112,7 +112,7 @@ if select_projects == "pyVaRES Library":
         ax.plot(-vargarchG99_rol, "gold", label="Gaussian GARCH-VaR")
         ax.plot(-vargarchT99_rol, "brown", label="t-Student GARCH-VaR")
         ax.set_ylim(-0.15, 0.04)
-        ax.set_title("Comparison between 99% GARCH-VaR from Gaussian and t-Student distributions", fontsize=20, fontweight="bold")
+        ax.set_title("99% GARCH-VaR from Gaussian and t-Student distributions", fontsize=20, fontweight="bold")
         ax.legend()
         st.pyplot(fig)
     
@@ -144,7 +144,7 @@ if select_projects == "pyVaRES Library":
         ax.plot(-df1, "red", label="Rolling gaussian factorial VaR")
         ax.plot(-df2, "blue", label="Rolling t-Student factorial VaR")
         ax.set_ylim(-0.12, 0.04)
-        ax.set_title("Comparison between 99% Factorial VaR from Gaussian and t-Student distributions", fontsize=20, fontweight="bold")
+        ax.set_title("99% Factorial VaR from Gaussian and t-Student distributions", fontsize=20, fontweight="bold")
         ax.legend()
         st.pyplot(fig)
     
