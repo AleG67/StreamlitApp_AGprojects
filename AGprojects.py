@@ -9,6 +9,7 @@ from FunctionsInvCha_web import *
 from ClassOptions import *
 from FunctionsThesis import *
 from FunctionsHRP import *
+from pyVaRES import *
 
 import plotly.graph_objects as go
 import plotly.express as px
@@ -24,7 +25,7 @@ st.sidebar.subheader("GitHub:")
 st.sidebar.write("https://github.com/AleG67")
 st.sidebar.subheader("Navigate trough my Projects")
 select_projects = st.sidebar.selectbox("Choose the project you want to see:", 
-                                        options=("Home", "Investment challenge", "Thesis report", "HRP Portfolio", "Options Valuation"))
+                                        options=("Home", "pyVaRES Library", "Thesis report", "HRP Portfolio", "Options Valuation", "Investment challenge"))
 if select_projects == "Home":
     st.title("Welcome to AG Projects")
     st.subheader("About me")
@@ -37,73 +38,129 @@ if select_projects == "Home":
 def import_data(filename):
     data = pd.read_excel(filename)
     return data
-    
-########### Project 1: Investment challenge ############################
-if select_projects == "Investment challenge":
-        # CACHE = avoid that actions run more than once every time the user inputs something new in the page
-    @st.cache
-    def get_stock(ticker, start, end):
-        data = web.DataReader(ticker, "yahoo", start=start, end=end) 
-        data["MA5"] = data["Adj Close"].rolling(5).mean()
-        data["MA20"] = data["Adj Close"].rolling(20).mean()
-        data = data.dropna()
-        return data
 
-    # Create containers
+########### Project 1: pyVaRES library ############################
+if select_projects == "pyVaRES Library":
+
     header = st.beta_container()
-    esg_stocks = st.beta_container()
-    #stock_chart = st.beta_container()
-    indicators_models = st.beta_container()
-    prediction = st.beta_container()
-    
-    # Add things into the containers
+    example1 = st.beta_container()
+    example2 = st.beta_container()
+    example3 = st.beta_container()
+    example4 = st.beta_container()
+    example5 = st.beta_container()
+
     with header:
-        #add an image
-        st.image("https://i.ytimg.com/vi/7UsyG51Eog8/maxresdefault.jpg")
-        #st.title("Reply Sustainable Investment Challenge")     
-        st.title("Predict daily stock movements with ML models")
-        st.write("**GitHub repository link:** https://github.com/AleG67/ReplyInvestmentChallenge")
-        st.markdown("In this project I'm predicting stock price movements with four machine learning classification methods. This is a very basic coding exercise to experience the practical aspects and problems of implementing ML techniques on real time data.")
-        st.markdown("In the project there are a number of semplifications, such as: \n - Basic machine learning models. \n - Basic data sources and input features. \n - Semplifications in the trading process and no automated trading.")
-        st.markdown("This is simply intended to show a basic framework for a quantitative trading strategy, the models are not sophisticated enough to be effective and the strategy management is not realistic.")
+        st.title("Example on how to use the toy-library pyVaRES")
+        st.write("**GitHub repository link:** https://github.com/AleG67/pyVaRES_toy-library")
+        st.markdown("Please take a look at the GitHub repository for a detailed description of each function in the library.")
+        # import data to use in the examples and compute returns
+        sns.set()
+    
+    with example1:
+        st.header("Example 1: Basic features of the library")
+        st.markdown("In their simplest form, the two functions **VaR_basic** and **ES_basic** can be used to obtain the Value at Risk and the Expected shortfall for the next day or h-days ahead, given a certain significance level alpha, an assumed distribution for the analyzed returns and a position size.")
+        with st.echo():
+            # import data needed
+            testdata = pd.read_excel("dataneeded/data_VAR.xlsx", index_col="Dates")
+            testret = testdata["SPY"].pct_change().dropna()
+            # Compute VaR and ES for tomorrow
+            varG99 = VaR_basic(testret, alpha=0.01, h=1, dist="gaussian", position=1)
+            ESG99 = ES_basic(testret, alpha=0.01, h=1, dist="gaussian", position=1)
+            #print(varG99)
+            #print(ESG99)
+        varG99_rol = VaR_basic(testret, dist="gaussian", rolling=True, start=100, win=500)
+        esG99_rol = ES_basic(testret, dist="gaussian", rolling=True, start=100, win=500)
+        st.subheader("Output of the functions Var_basic and ES_basic")
+        st.write("**Gaussian 99% 1-day VaR for tomorrow: **", varG99.round(5))
+        st.write("**Gaussian 99% 1-day Expected shortfall for tomorrow: **", ESG99.round(5))
+    
+    with example2:
+        st.header("Example 2: ES comparison with rolling feature")
+        st.markdown("VaR_basic and ES_basic can also be used to produce rolling forecasts ('win' is the number of datapoints used in the rolling window) starting from the i-th data point, defined by the 'start' parameter.")
+        with st.echo():
+            esG99 = ES_basic(testret, dist="gaussian")
+            # create a dataframe with the same value for each date 
+            # for a fixed gaussian ES used as benchnamrk
+            esG99 = np.full(len(testret), esG99)  
+            df_esG99 = pd.DataFrame(esG99, index=testret.index)
+            # get rolling ES for different distributions
+            esG99_rol = ES_basic(testret, dist="gaussian", rolling=True, start=60, win=500)
+            esT99_rol = ES_basic(testret, dist="tstudent", df=7, rolling=True, start=60, win=500)
+            esH99_rol = ES_basic(testret, dist="hist", rolling=True, start=60, win=500)
+            #plot the results
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(testret, "grey")
+        # Use - to plot as a loss and compare with actual losses
+        ax.plot(-df_esG99, "red", linestyle="--", label="Static Gaussian ES")
+        ax.plot(-esG99_rol, "red", label="Gaussian ES")
+        ax.plot(-esT99_rol, "blue", label="t-Student ES")
+        ax.plot(-esH99_rol, "green", label="Historical ES")
+        ax.set_ylim(-0.12, 0.04)
+        ax.legend();
+        ax.set_title("Comparison between 99% ES from different distributions", fontsize=20, fontweight="bold")
+        st.pyplot(fig)
+    
+    with example3: 
+        st.header("Example 3: GARCH-VaR")
+        st.markdown("VaR_basic and ES_basic accept a volatility esimate produced by a garch(1,1) model if **garch=True**.")
+        with st.echo():
+            vargarchG99_rol = VaR_basic(testret, dist="gaussian", rolling=True, start=100, garch=True)
+            vargarchT99_rol = VaR_basic(testret, dist="tstudent", rolling=True, start=100, garch=True)
+            # plot the results
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(testret, "grey")
+        ax.plot(-vargarchG99_rol, "gold", label="Gaussian GARCH-VaR")
+        ax.plot(-vargarchT99_rol, "brown", label="t-Student GARCH-VaR")
+        ax.set_ylim(-0.15, 0.04)
+        ax.set_title("Comparison between 99% GARCH-VaR from Gaussian and t-Student distributions", fontsize=20, fontweight="bold")
+        ax.legend()
+        st.pyplot(fig)
+    
+    with example4:
+        st.header("Example 4: Factorial VaR comparison")
+        st.markdown("Annother function available in the portfolio is **pf_factVaRES**. It allows to compute VaR and ES using a simple factorial model with given factors that you can decide and pass as arguments with 'fact'.")
+        #data for factorial
+        stocks = ["AAPL", "BAC", "JNJ", "VWAGY", "^GSPC", "^GDAXI"]
+        pf = web.DataReader(stocks, "yahoo", "2018-01-01", "2021-01-01")["Adj Close"]
+        retpf = pf.pct_change().dropna()
 
-    with esg_stocks:
-        st.header("I. Tickers used in the models and ESG rating")
-        st.markdown("The rule of the challenge was to assign a bonus if you were long on companies with good ESG rating and a penalty otherwise. Hence an idea could be to screen the list of stocks provided in the challenge based on the accuracy scores of each classification method. Then trade based on the predictions and their ESG rating, based on 3 categories: \n  - Good (AAA, AA) \n  - Average (A, BBB, BB, B) \n  - Bad (B, CCC)")
-        # import a dataset and show it in the page
-        esg_stock_data = import_data("Dataneeded/final_esg.xlsx")
-        st.write(esg_stock_data)
-
-    with indicators_models:
-        st.header("II. Technical Indicator inputs and Models deployed")
-        # Create 2 columns (then to add things in them use col1. or col2. instead of st.)
-        col1, col2 = st.beta_columns(2)
-        col1.subheader("Features utilized")
-        # create bullet points with the features
-        col1.markdown("* **S&P 500 Up/Down: ** Direction of the S&P returns for today.")
-        col1.markdown("* **S&P 500 Volatility: ** Rolling 10-days volatility of the S&P.")
-        col1.markdown("* **RSI: ** Relative strenght index.")
-        col1.markdown("* **SR: ** Stochastic oscillator.")
-        col1.markdown("* **MACD: ** Moving average convergence-divergence.")
-        col1.markdown("* **ATR: ** Average true range.")
-        #add more
-        col2.subheader("Machine Learning models")
-        col2.markdown("* **Random Forest**")
-        col2.markdown("* **XG Boost**")
-        col2.markdown("* **Linear Discriminant Analysis (LDA)**")
-        col2.markdown("* **Quadratic Discriminant Analysis (QDA)**")
-
-    with prediction:
-        st.header("III. Models implementation on daily market data")
-        st.subheader("An error will occur if the market is closed when you try to obtain the prediction, because the models require current market data to predict.")
-        # select box
-        box = st.selectbox("Choose the stock you want to obtain predictions for:", options=esg_stock_data["Ticker"])
-        st.subheader(f"Models Predictions for {box}:")
-        rf, xg, lda, qda = model_application_for_web(box)
-        st.markdown(f"* **Random Forest prediction:** {rf}")
-        st.markdown(f"* **XGBoost prediction:** {xg}")
-        st.markdown(f"* **LDA prediction:** {lda}")
-        st.markdown(f"* **QDA prediction:** {qda}")
+        with st.echo():
+            # compute forecasted gaussian factorial VaR for tomorrow
+            VaR_f = pf_factVaRES(retpf[["AAPL", "BAC", "JNJ", "VWAGY"]],  # stocks in portfolio
+                                 retpf[["^GSPC", "^GDAXI"]],              # mapping factors
+                                 w = [1/4, 1/4, 1/4, 1/4])[0]             # weights of stock portfolio
+            # create pd series with fixed value
+            VaR_f = np.full(len(retpf), VaR_f)
+            VaR_f = pd.Series(VaR_f, index=retpf.index, name="VaR")
+            # compute rolling factorial VaR
+            df1 = pf_factVaRES(r=retpf[["AAPL", "BAC", "JNJ", "VWAGY"]], fact=retpf[["^GSPC", "^GDAXI"]], w=[1/4, 1/4, 1/4, 1/4], dist="gaussian", rolling=True, start=60, win=500)[0]
+            df2 = pf_factVaRES(r=retpf[["AAPL", "BAC", "JNJ", "VWAGY"]], fact=retpf[["^GSPC", "^GDAXI"]], w=[1/4, 1/4, 1/4, 1/4], dist="tstudent", rolling=True, start=60, win=500)[0]
+            # compute portfolio returns
+            retpf["r"] = retpf["AAPL"]*1/4 + retpf["BAC"]*1/4 + retpf["JNJ"]*1/4 + retpf["VWAGY"]*1/4
+            # plot the results
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(retpf["r"], "grey")
+        ax.plot(-VaR_f, "red", linestyle="--", label="Static gaussian Factorial VaR")
+        ax.plot(-df1, "red", label="Rolling gaussian factorial VaR")
+        ax.plot(-df2, "blue", label="Rolling t-Student factorial VaR")
+        ax.set_ylim(-0.12, 0.04)
+        ax.set_title("Comparison between 99% Factorial VaR from Gaussian and t-Student distributions", fontsize=20, fontweight="bold")
+        ax.legend()
+        st.pyplot(fig)
+    
+    with example5:
+        st.header("Example 5: VaR Validation")
+        st.markdown("With the **VaR_validation** function it is possible to check if our VaR is valid or not using the normal approximation to the binomial.")
+        with st.echo():
+            # Compute fixed VaR
+            vG99 = VaR_basic(testret, dist="gaussian")
+            # create a series
+            vG99 = np.full(len(testret), vG99)
+            varG99 = pd.Series(vG99, index=testret.index, name="VaR")
+            validation_ouput = VaR_validation(testret, varG99, print_output=False) # Var series must be positive
+            # validation_ouput contains Z-score and pvalue for the test.
+        st.write("Z-score: ", validation_ouput[0])
+        st.write("pvalue: ", validation_ouput[1])
 
 ########### Project 2: Thesis Report #################################
 # import data Direct and Indirect
@@ -341,3 +398,70 @@ if select_projects == "Options Valuation":
         option = valuation_mcs_european('option', underlying=under, mar_env=me, payoff_func=payoff_func)
         st.write("**Present value of the Option:** ", option.present_value().round(2))
         st.write("Delta of the Option: ", option.delta())
+   
+  ########### Project 5: Investment challenge ############################
+if select_projects == "Investment challenge":
+        # CACHE = avoid that actions run more than once every time the user inputs something new in the page
+    @st.cache
+    def get_stock(ticker, start, end):
+        data = web.DataReader(ticker, "yahoo", start=start, end=end) 
+        data["MA5"] = data["Adj Close"].rolling(5).mean()
+        data["MA20"] = data["Adj Close"].rolling(20).mean()
+        data = data.dropna()
+        return data
+
+    # Create containers
+    header = st.beta_container()
+    esg_stocks = st.beta_container()
+    #stock_chart = st.beta_container()
+    indicators_models = st.beta_container()
+    prediction = st.beta_container()
+    
+    # Add things into the containers
+    with header:
+        #add an image
+        st.image("https://i.ytimg.com/vi/7UsyG51Eog8/maxresdefault.jpg")
+        #st.title("Reply Sustainable Investment Challenge")     
+        st.title("Predict daily stock movements with ML models")
+        st.write("**GitHub repository link:** https://github.com/AleG67/ReplyInvestmentChallenge")
+        st.markdown("In this project I'm predicting stock price movements with four machine learning classification methods. This is a very basic coding exercise to experience the practical aspects and problems of implementing ML techniques on real time data.")
+        st.markdown("In the project there are a number of semplifications, such as: \n - Basic machine learning models. \n - Basic data sources and input features. \n - Semplifications in the trading process and no automated trading.")
+        st.markdown("This is simply intended to show a basic framework for a quantitative trading strategy, the models are not sophisticated enough to be effective and the strategy management is not realistic.")
+
+    with esg_stocks:
+        st.header("I. Tickers used in the models and ESG rating")
+        st.markdown("The rule of the challenge was to assign a bonus if you were long on companies with good ESG rating and a penalty otherwise. Hence an idea could be to screen the list of stocks provided in the challenge based on the accuracy scores of each classification method. Then trade based on the predictions and their ESG rating, based on 3 categories: \n  - Good (AAA, AA) \n  - Average (A, BBB, BB, B) \n  - Bad (B, CCC)")
+        # import a dataset and show it in the page
+        esg_stock_data = import_data("Dataneeded/final_esg.xlsx")
+        st.write(esg_stock_data)
+
+    with indicators_models:
+        st.header("II. Technical Indicator inputs and Models deployed")
+        # Create 2 columns (then to add things in them use col1. or col2. instead of st.)
+        col1, col2 = st.beta_columns(2)
+        col1.subheader("Features utilized")
+        # create bullet points with the features
+        col1.markdown("* **S&P 500 Up/Down: ** Direction of the S&P returns for today.")
+        col1.markdown("* **S&P 500 Volatility: ** Rolling 10-days volatility of the S&P.")
+        col1.markdown("* **RSI: ** Relative strenght index.")
+        col1.markdown("* **SR: ** Stochastic oscillator.")
+        col1.markdown("* **MACD: ** Moving average convergence-divergence.")
+        col1.markdown("* **ATR: ** Average true range.")
+        #add more
+        col2.subheader("Machine Learning models")
+        col2.markdown("* **Random Forest**")
+        col2.markdown("* **XG Boost**")
+        col2.markdown("* **Linear Discriminant Analysis (LDA)**")
+        col2.markdown("* **Quadratic Discriminant Analysis (QDA)**")
+
+    with prediction:
+        st.header("III. Models implementation on daily market data")
+        st.subheader("An error will occur if the market is closed when you try to obtain the prediction, because the models require current market data to predict.")
+        # select box
+        box = st.selectbox("Choose the stock you want to obtain predictions for:", options=esg_stock_data["Ticker"])
+        st.subheader(f"Models Predictions for {box}:")
+        rf, xg, lda, qda = model_application_for_web(box)
+        st.markdown(f"* **Random Forest prediction:** {rf}")
+        st.markdown(f"* **XGBoost prediction:** {xg}")
+        st.markdown(f"* **LDA prediction:** {lda}")
+        st.markdown(f"* **QDA prediction:** {qda}")
