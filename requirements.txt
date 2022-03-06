@@ -4,7 +4,7 @@ pandas==1.2.2
 matplotlib==3.2.2
 numpy==1.18.5
 pandas_datareader==0.10.0
-streamlit==0.78.0
+streamlit==1.7.0
 scipy==1.6.1
 ta==0.5.25
 xgboost==1.2.1
